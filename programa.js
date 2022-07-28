@@ -7,22 +7,31 @@ class Contenedor {
 
   async getAll() {
     try {
-      const listObjs = JSON.parse(
-        await fs.promises.readFile(`./archivos/${this.archive}`, "utf-8", 2)
+      const listObjs = await fs.promises.readFile(
+        `./archivos/${this.archive}`,
+        "utf-8",
+        2
       );
-      return listObjs;
+      if (listObjs === "") {
+        return console.log("La lista de productos está vacía");
+      } else {
+        const listParce = JSON.parse(listObjs);
+        // console.log(listParce);
+        return listParce;
+      }
     } catch (err) {
       console.log(`Ocurrió el error: ${err}`);
     }
   }
 
   async save(object) {
-    const listObjs = await this.getAll();
+    let listObjs = await this.getAll();
     let id;
-    if (listObjs.length !== 0) {
-      id = listObjs.length + 1;
-    } else {
+    if (listObjs === undefined) {
+      listObjs = [];
       id = 1;
+    } else {
+      id = listObjs.length + 1;
     }
     const newObject = { ...object, id: id };
     listObjs.push(newObject);
@@ -83,11 +92,11 @@ class Contenedor {
 const miFuncion = new Contenedor("productos.txt");
 miFuncion.getAll();
 miFuncion.save({
-  title: "Lapicera",
+  title: "Regla",
   price: 120.67,
   thumbnail:
     "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
 });
-miFuncion.getById(2);
-miFuncion.deleteById(4);
+miFuncion.getById(1);
+miFuncion.deleteById(3);
 miFuncion.deleteAll();
